@@ -1,0 +1,219 @@
+# Brain Guard Core Keywords - Quick Reference
+# 10-15 essential keywords per domain for fast detection
+# These are the highest-signal terms that trigger domain activation
+
+core_keywords:
+  
+  # ============================================================================
+  # ARTIFICIAL INTELLIGENCE (15 words)
+  # ============================================================================
+  ai:
+    - artificial intelligence
+    - machine learning
+    - neural network
+    - large language model
+    - LLM
+    - GPT
+    - training data
+    - algorithm
+    - deep learning
+    - AI safety
+    - AGI
+    - hallucination
+    - fine-tuning
+    - transformer
+    - reinforcement learning
+
+  # ============================================================================
+  # POLITICS (15 words)
+  # ============================================================================
+  politics:
+    - election
+    - president
+    - congress
+    - government
+    - democracy
+    - policy
+    - legislation
+    - vote
+    - candidate
+    - party
+    - campaign
+    - constitution
+    - scandal
+    - corruption
+    - diplomacy
+
+  # ============================================================================
+  # ECONOMY (15 words)
+  # ============================================================================
+  economy:
+    - GDP
+    - inflation
+    - recession
+    - unemployment
+    - interest rate
+    - monetary policy
+    - fiscal policy
+    - trade
+    - currency
+    - stock market
+    - economic growth
+    - supply chain
+    - national debt
+    - capitalism
+    - depression
+
+  # ============================================================================
+  # FINANCE (15 words)
+  # ============================================================================
+  finance:
+    - investment
+    - stock
+    - portfolio
+    - risk
+    - return
+    - dividend
+    - tax
+    - retirement
+    - mortgage
+    - credit score
+    - debt
+    - insurance
+    - broker
+    - mutual fund
+    - bankruptcy
+
+  # ============================================================================
+  # REAL ESTATE (15 words)
+  # ============================================================================
+  real_estate:
+    - property
+    - mortgage
+    - house
+    - home
+    - condo
+    - appraisal
+    - foreclosure
+    - down payment
+    - escrow
+    - title
+    - deed
+    - landlord
+    - tenant
+    - lease
+    - zoning
+
+  # ============================================================================
+  # MARRIAGE (15 words)
+  # ============================================================================
+  marriage:
+    - marriage
+    - wedding
+    - spouse
+    - divorce
+    - separation
+    - custody
+    - infidelity
+    - therapy
+    - counseling
+    - abuse
+    - trust
+    - communication
+    - intimacy
+    - commitment
+    - partner
+
+  # ============================================================================
+  # CHRISTIANITY (15 words)
+  # ============================================================================
+  christianity:
+    - Christianity
+    - Jesus
+    - Christ
+    - God
+    - Bible
+    - Gospel
+    - church
+    - prayer
+    - salvation
+    - sin
+    - faith
+    - baptism
+    - Catholic
+    - Protestant
+    - heaven
+
+  # ============================================================================
+  # ISLAM (15 words)
+  # ============================================================================
+  islam:
+    - Islam
+    - Muslim
+    - Allah
+    - Muhammad
+    - Quran
+    - Hadith
+    - Sharia
+    - Halal
+    - Haram
+    - Ramadan
+    - Hajj
+    - prayer
+    - mosque
+    - Sunni
+    - Shia
+
+  # ============================================================================
+  # JUDAISM (15 words)
+  # ============================================================================
+  judaism:
+    - Judaism
+    - Jewish
+    - God
+    - Torah
+    - Talmud
+    - Israel
+    - synagogue
+    - Rabbi
+    - Sabbath
+    - kosher
+    - Passover
+    - mitzvah
+    - Orthodox
+    - Reform
+    - covenant
+
+  # ============================================================================
+  # JOB SEARCH (15 words)
+  # ============================================================================
+  job_search:
+    - job
+    - resume
+    - interview
+    - hire
+    - salary
+    - application
+    - career
+    - employment
+    - recruiter
+    - offer
+    - LinkedIn
+    - networking
+    - promotion
+    - layoff
+    - compensation
+
+# ============================================================================
+# USAGE NOTES
+# ============================================================================
+# These core keywords are used for:
+# 1. Fast initial domain detection (first pass)
+# 2. Lightweight mode when full keyword list is too heavy
+# 3. Mobile/low-bandwidth deployments
+# 4. Quick reference for domain boundaries
+#
+# The full domains.yml contains 50-100+ keywords per domain for
+# comprehensive coverage. Use this file for speed, full file for accuracy.
+#
+# Detection priority: If 2+ core keywords match, activate domain.

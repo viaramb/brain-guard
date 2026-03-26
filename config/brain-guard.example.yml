@@ -1,0 +1,96 @@
+# Brain Guard Configuration Example
+# Copy this to config/brain-guard.yml and customize
+
+enabled: true
+mode: adaptive  # silent | warn | strict | adaptive
+
+latency:
+  target_ms: 50
+  max_ms: 100
+  circuit_breaker_threshold: 0.95
+  async_metrics: true
+
+thresholds:
+  drift_warning: 0.65
+  rupture_alert: 0.85
+  drift_velocity: 0.10
+  variance_collapse: 0.02
+  recoverability: 0.30
+  ambiguity: 0.70
+
+monitoring:
+  default_level: light
+  escalation_turns: 10
+  high_stakes_keywords:
+    - medical
+    - health
+    - diagnosis
+    - prescription
+    - legal
+    - contract
+    - agreement
+    - liability
+    - financial
+    - investment
+    - tax
+    - account
+    - security
+    - password
+    - credential
+    - private key
+  deescalation_turns: 5
+
+embedding:
+  provider: local  # openai | local | mock
+  model: all-MiniLM-L6-v2
+  dimensions: 384
+  cache_enabled: true
+  cache_ttl_seconds: 3600
+  fallback_to_string_sim: true
+
+anchoring:
+  enabled: true
+  max_anchors: 50
+  contradiction_check: true
+  contradiction_threshold: 0.85
+  anchor_types:
+    - factual
+    - procedural
+    - contextual
+    - temporal
+
+interventions:
+  auto_regenerate: false
+  max_regenerations: 2
+  user_confirmation_for_halt: true
+  fallback_message: "I'm having trouble maintaining coherence. Let me try a more careful approach."
+
+storage:
+  type: sqlite  # sqlite | postgresql
+  connection_string: "~/.openclaw/brain_guard.db"
+  retention_days: 30
+  aggregation_retention_days: 365
+  batch_size: 100
+  write_interval_ms: 1000
+
+dashboard:
+  enabled: true
+  port: 8080
+  host: 127.0.0.1
+  auth_required: true
+  auth_token: ""  # Auto-generated if empty
+  cors_origins:
+    - http://localhost:3000
+    - http://127.0.0.1:3000
+  max_sessions_list: 100
+
+logging:
+  level: info
+  log_interventions: true
+  log_metrics: false
+  log_file: ""  # Empty for stdout only
+
+testing:
+  mock_embeddings: false
+  calibration_mode: false
+  a_b_test_enabled: false

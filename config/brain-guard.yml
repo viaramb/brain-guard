@@ -1,0 +1,71 @@
+# Brain Guard Configuration
+# Copy this file to config/brain-guard.yml and customize
+
+# Plugin mode: adaptive, strict, warn, silent
+mode: adaptive
+
+# Storage configuration
+storage:
+  type: sqlite  # sqlite or postgresql
+  connection_string: "~/.openclaw/brain-guard/brain_guard.db"
+  pool_size: 5
+  max_overflow: 10
+
+# Embedding service configuration
+embedding:
+  provider: mock  # mock, openai, sentence_transformers
+  model: text-embedding-3-small  # For OpenAI
+  dimensions: 128
+  cache_enabled: true
+  cache_size: 1000
+  # OpenAI specific
+  api_key: ""  # Set via env var: OPENAI_API_KEY
+  # Sentence Transformers specific
+  local_model: "all-MiniLM-L6-v2"
+
+# Thresholds configuration
+thresholds:
+  drift_warning: 0.65
+  rupture_alert: 0.85
+  drift_velocity: 0.10
+  variance_collapse: 0.02
+  recoverability: 0.30
+
+# Interventions configuration
+interventions:
+  auto_regenerate: true
+  max_regenerations: 2
+  fallback_message: "I'm having trouble maintaining coherence. Let me restart with more context."
+
+# Latency configuration
+latency:
+  max_ms: 500
+  circuit_breaker_threshold: 5
+  circuit_breaker_timeout_ms: 30000
+
+# Session anchoring configuration
+anchoring:
+  max_anchors: 50
+  contradiction_check: true
+  contradiction_threshold: 0.85
+
+# Dashboard configuration
+dashboard:
+  enabled: true
+  host: "127.0.0.1"
+  port: 8080
+  auth_required: true
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+
+# Logging configuration
+logging:
+  level: INFO
+  format: json
+  output: stdout
+
+# Testing configuration
+testing:
+  mock_embeddings: false
+  mock_database: false

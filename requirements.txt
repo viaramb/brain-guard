@@ -1,0 +1,10 @@
+aiosqlite>=0.20.0
+fastapi>=0.109.0
+numpy>=1.24.0
+pydantic>=2.0.0
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+python-dotenv>=1.0.0
+sentence-transformers>=2.3.0
+slowapi>=0.1.9
+uvicorn>=0.27.0

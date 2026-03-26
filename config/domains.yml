@@ -1,0 +1,1097 @@
+# Brain Guard Domain Configurations
+# Define high-stakes keywords and monitoring thresholds per domain
+# Add new domains or modify existing ones without changing core code
+
+domains:
+  # ============================================================================
+  # DEFAULT / GENERAL
+  # ============================================================================
+  general:
+    name: "General Conversation"
+    description: "Default mode for casual chat"
+    high_stakes_keywords: []
+    thresholds:
+      drift_warning: 0.65
+      rupture_alert: 0.85
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.30
+    interventions:
+      mode: adaptive
+      auto_regenerate: false
+      require_confirmation: false
+      user_visible_warnings: true
+    compliance:
+      audit_log: false
+      retention_days: 7
+
+  # ============================================================================
+  # ARTIFICIAL INTELLIGENCE
+  # ============================================================================
+  ai:
+    name: "Artificial Intelligence"
+    description: "AI research, development, ethics, and applications"
+    high_stakes_keywords:
+      - artificial intelligence
+      - machine learning
+      - deep learning
+      - neural network
+      - neural networks
+      - large language model
+      - LLM
+      - LLMs
+      - GPT
+      - Claude
+      - Gemini
+      - training data
+      - model weights
+      - inference
+      - fine-tuning
+      - alignment
+      - AI safety
+      - AGI
+      - artificial general intelligence
+      - singularity
+      - prompt injection
+      - hallucination
+      - bias
+      - algorithm
+      - dataset
+      - transformer
+      - attention mechanism
+      - reinforcement learning
+      - RLHF
+      - autonomous
+      - agent
+      - multi-agent
+    thresholds:
+      drift_warning: 0.60
+      rupture_alert: 0.80
+      drift_velocity: 0.08
+      variance_collapse: 0.02
+      recoverability: 0.35
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+    compliance:
+      audit_log: true
+      retention_days: 30
+    notes: |
+      AI discussions often involve technical precision. Terms evolve rapidly
+      (e.g., "GPT" meaning different things over time). Monitor for concept
+      drift where definitions shift mid-conversation.
+
+  # ============================================================================
+  # POLITICS
+  # ============================================================================
+  politics:
+    name: "Politics & Governance"
+    description: "Political discussion, policy, elections, governance"
+    high_stakes_keywords:
+      - election
+      - vote
+      - voting
+      - candidate
+      - president
+      - prime minister
+      - congress
+      - parliament
+      - senate
+      - legislation
+      - bill
+      - law
+      - policy
+      - government
+      - regime
+      - democracy
+      - authoritarian
+      - constitution
+      - amendment
+      - supreme court
+      - judicial
+      - executive
+      - legislative
+      - party
+      - republican
+      - democrat
+      - liberal
+      - conservative
+      - socialist
+      - fascist
+      - communist
+      - lobbying
+      - campaign
+      - referendum
+      - impeachment
+      - scandal
+      - corruption
+      - sanctions
+      - treaty
+      - diplomacy
+      - war
+      - conflict
+      - NATO
+      - UN
+      - EU
+      - geopolitics
+    thresholds:
+      drift_warning: 0.55
+      rupture_alert: 0.75
+      drift_velocity: 0.12
+      variance_collapse: 0.02
+      recoverability: 0.40
+    interventions:
+      mode: strict
+      auto_regenerate: true
+      require_confirmation: true
+      user_visible_warnings: true
+      max_regenerations: 3
+    compliance:
+      audit_log: true
+      retention_days: 90
+    notes: |
+      Political discussions prone to emotional drift and partisan framing.
+      Strict monitoring to maintain factual grounding. High recoverability
+      threshold because political positions are often deeply held.
+
+  # ============================================================================
+  # ECONOMY
+  # ============================================================================
+  economy:
+    name: "Economics & Macroeconomics"
+    description: "Economic theory, policy, indicators, global markets"
+    high_stakes_keywords:
+      - GDP
+      - inflation
+      - deflation
+      - recession
+      - depression
+      - unemployment
+      - employment
+      - labor market
+      - interest rate
+      - federal reserve
+      - central bank
+      - monetary policy
+      - fiscal policy
+      - stimulus
+      - austerity
+      - trade
+      - tariff
+      - import
+      - export
+      - trade deficit
+      - trade surplus
+      - currency
+      - exchange rate
+      - forex
+      - commodity
+      - supply chain
+      - inflation rate
+      - CPI
+      - consumer price index
+      - PPI
+      - economic growth
+      - economic indicator
+      - leading indicator
+      - lagging indicator
+      - bubble
+      - crash
+      - market correction
+      - quantitative easing
+      - QE
+      - national debt
+      - deficit
+      - surplus
+      - budget
+      - subsidy
+      - welfare
+      - universal basic income
+      - UBI
+      - capitalism
+      - socialism
+      - free market
+      - planned economy
+      - Keynesian
+      - Austrian economics
+      - behavioral economics
+    thresholds:
+      drift_warning: 0.58
+      rupture_alert: 0.78
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.35
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+    compliance:
+      audit_log: true
+      retention_days: 60
+    notes: |
+      Economic discussions often mix theory with opinion. Monitor for
+      conflation of correlation/causation, and drift between micro and
+      macroeconomic frameworks.
+
+  # ============================================================================
+  # FINANCE
+  # ============================================================================
+  finance:
+    name: "Finance & Investing"
+    description: "Personal finance, investing, banking, markets"
+    high_stakes_keywords:
+      - investment
+      - invest
+      - stock
+      - bond
+      - equity
+      - security
+      - securities
+      - portfolio
+      - asset allocation
+      - diversification
+      - risk
+      - return
+      - ROI
+      - dividend
+      - capital gain
+      - capital loss
+      - tax
+      - tax liability
+      - capital gains tax
+      - IRA
+      - 401k
+      - pension
+      - retirement
+      - savings
+      - checking
+      - account
+      - bank
+      - credit union
+      - loan
+      - mortgage
+      - interest
+      - APR
+      - APY
+      - credit score
+      - debt
+      - credit card
+      - bankruptcy
+      - foreclosure
+      - insurance
+      - life insurance
+      - health insurance
+      - auto insurance
+      - premium
+      - deductible
+      - claim
+      - broker
+      - brokerage
+      - advisor
+      - financial advisor
+      - fiduciary
+      - fee-only
+      - commission
+      - ETF
+      - ETFs
+      - exchange traded fund
+      - mutual fund
+      - index fund
+      - hedge fund
+      - private equity
+      - venture capital
+      - IPO
+      - initial public offering
+      - options
+      - futures
+      - derivative
+      - short selling
+      - margin
+      - leverage
+      - liquidity
+      - solvency
+      - bankruptcy
+      - fraud
+      - Ponzi
+      - pyramid scheme
+      - insider trading
+    thresholds:
+      drift_warning: 0.50
+      rupture_alert: 0.70
+      drift_velocity: 0.08
+      variance_collapse: 0.02
+      recoverability: 0.45
+    interventions:
+      mode: strict
+      auto_regenerate: true
+      require_confirmation: true
+      user_visible_warnings: true
+      max_regenerations: 3
+      fallback_message: "I'm not a financial advisor. For personalized financial advice, please consult a qualified professional."
+    compliance:
+      audit_log: true
+      retention_days: 2555  # 7 years for financial records
+      disclaimer_required: true
+    notes: |
+      STRICTEST MONITORING. Financial advice has legal implications.
+      Always include disclaimer. Monitor for specific investment
+      recommendations, tax advice, and liability claims. High
+      recoverability threshold because financial mistakes are costly.
+
+  # ============================================================================
+  # REAL ESTATE
+  # ============================================================================
+  real_estate:
+    name: "Real Estate"
+    description: "Property, housing, mortgages, development"
+    high_stakes_keywords:
+      - property
+      - real estate
+      - house
+      - home
+      - apartment
+      - condo
+      - condominium
+      - townhouse
+      - single family
+      - multi-family
+      - commercial property
+      - industrial property
+      - land
+      - lot
+      - acreage
+      - mortgage
+      - down payment
+      - closing costs
+      - escrow
+      - title
+      - deed
+      - lien
+      - foreclosure
+      - short sale
+      - appraisal
+      - assessed value
+      - market value
+      - comparables
+      - comps
+      - MLS
+      - listing
+      - buyer
+      - seller
+      - agent
+      - realtor
+      - broker
+      - landlord
+      - tenant
+      - lease
+      - rental
+      - rent
+      - security deposit
+      - eviction
+      - HOA
+      - homeowners association
+      - zoning
+      - permit
+      - inspection
+      - disclosure
+      - lead paint
+      - asbestos
+      - mold
+      - flood zone
+      - earthquake
+      - hurricane
+      - insurance claim
+      - property tax
+      - capital improvement
+      - depreciation
+      - 1031 exchange
+      - REIT
+      - flipping
+      - wholesale
+      - BRRRR
+    thresholds:
+      drift_warning: 0.55
+      rupture_alert: 0.75
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.40
+    interventions:
+      mode: strict
+      auto_regenerate: true
+      require_confirmation: true
+      user_visible_warnings: true
+      max_regenerations: 2
+      fallback_message: "Real estate laws vary by jurisdiction. Consult a local real estate attorney or agent for advice specific to your area."
+    compliance:
+      audit_log: true
+      retention_days: 1825  # 5 years
+      disclaimer_required: true
+    notes: |
+      Real estate highly jurisdiction-dependent. Monitor for location
+      drift (advice for wrong state/country). Strict on legal claims
+      about landlord/tenant rights, zoning, and tax implications.
+
+  # ============================================================================
+  # MARRIAGE & RELATIONSHIPS
+  # ============================================================================
+  marriage:
+    name: "Marriage & Relationships"
+    description: "Marriage, relationships, family dynamics, counseling"
+    high_stakes_keywords:
+      - marriage
+      - married
+      - wedding
+      - spouse
+      - husband
+      - wife
+      - partner
+      - domestic partner
+      - fiancé
+      - fiancée
+      - engagement
+      - divorce
+      - separation
+      - annulment
+      - alimony
+      - spousal support
+      - child support
+      - custody
+      - joint custody
+      - sole custody
+      - visitation
+      - prenuptial
+      - prenup
+      - postnuptial
+      - infidelity
+      - affair
+      - cheating
+      - betrayal
+      - trust
+      - communication
+      - conflict
+      - argument
+      - fight
+      - abuse
+      - domestic violence
+      - emotional abuse
+      - gaslighting
+      - manipulation
+      - therapy
+      - counseling
+      - couples therapy
+      - marriage counseling
+      - mediator
+      - relationship coach
+      - intimacy
+      - sex
+      - sexuality
+      - compatibility
+      - compatibility test
+      - love languages
+      - attachment style
+      - codependency
+      - boundaries
+      - compromise
+      - commitment
+      - monogamy
+      - polyamory
+      - open relationship
+    thresholds:
+      drift_warning: 0.52
+      rupture_alert: 0.72
+      drift_velocity: 0.12
+      variance_collapse: 0.02
+      recoverability: 0.50
+    interventions:
+      mode: strict
+      auto_regenerate: true
+      require_confirmation: true
+      user_visible_warnings: true
+      max_regenerations: 3
+      fallback_message: "I'm an AI, not a therapist or counselor. For relationship issues, consider speaking with a licensed professional."
+    compliance:
+      audit_log: true
+      retention_days: 90
+      disclaimer_required: true
+      sensitive_content: true
+    notes: |
+      EMOTIONALLY SENSITIVE. High recoverability threshold because
+      relationship advice is deeply personal. Monitor for drift into
+      territory that should be handled by professionals (abuse,
+      mental health crises). Always suggest professional help for
+      serious issues.
+
+  # ============================================================================
+  # RELIGION - CHRISTIANITY
+  # ============================================================================
+  christianity:
+    name: "Christianity"
+    description: "Christian theology, practice, denominations"
+    high_stakes_keywords:
+      - Christianity
+      - Christian
+      - Jesus
+      - Christ
+      - God
+      - Holy Spirit
+      - Trinity
+      - Bible
+      - Scripture
+      - Gospel
+      - Old Testament
+      - New Testament
+      - Genesis
+      - Exodus
+      - Psalms
+      - Proverbs
+      - Matthew
+      - Mark
+      - Luke
+      - John
+      - Acts
+      - Epistles
+      - Revelation
+      - Apostle
+      - disciple
+      - Paul
+      - Peter
+      - Mary
+      - Virgin Mary
+      - Joseph
+      - Bethlehem
+      - Nazareth
+      - Jerusalem
+      - crucifixion
+      - resurrection
+      - ascension
+      - salvation
+      - sin
+      - forgiveness
+      - redemption
+      - grace
+      - faith
+      - good works
+      - justification
+      - sanctification
+      - baptism
+      - communion
+      - Eucharist
+      - Lord's Supper
+      - confirmation
+      - confession
+      - penance
+      - prayer
+      - worship
+      - church
+      - cathedral
+      - chapel
+      - parish
+      - congregation
+      - pastor
+      - priest
+      - minister
+      - reverend
+      - father
+      - bishop
+      - pope
+      - Vatican
+      - Catholic
+      - Protestant
+      - Orthodox
+      - Lutheran
+      - Calvinist
+      - Reformed
+      - Baptist
+      - Methodist
+      - Presbyterian
+      - Anglican
+      - Episcopal
+      - Evangelical
+      - Pentecostal
+      - Mormon
+      - LDS
+      - Jehovah's Witness
+      - Seventh-Day Adventist
+      - doctrine
+      - theology
+      - dogma
+      - creed
+      - catechism
+      - ecumenical
+      - schism
+      - heresy
+      - canon
+      - apocrypha
+      - eschatology
+      - rapture
+      - second coming
+      - heaven
+      - hell
+      - purgatory
+      - eternal life
+      - damnation
+    thresholds:
+      drift_warning: 0.58
+      rupture_alert: 0.78
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.40
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+      fallback_message: "I'm an AI, not a theologian or clergy. For spiritual guidance, consider speaking with a religious leader."
+    compliance:
+      audit_log: true
+      retention_days: 30
+      disclaimer_required: true
+      sensitive_content: true
+    notes: |
+      Theological discussions require precision. Monitor for drift
+      between denominations (Catholic vs Protestant views). Be
+      respectful of doctrinal differences. Flag when crossing into
+      pastoral counseling territory.
+
+  # ============================================================================
+  # RELIGION - ISLAM
+  # ============================================================================
+  islam:
+    name: "Islam"
+    description: "Islamic theology, practice, jurisprudence"
+    high_stakes_keywords:
+      - Islam
+      - Islamic
+      - Muslim
+      - Allah
+      - God
+      - Muhammad
+      - Prophet
+      - Messenger
+      - Quran
+      - Qur'an
+      - Koran
+      - Hadith
+      - Sunnah
+      - Sira
+      - Tafsir
+      - Fiqh
+      - Sharia
+      - Shariah
+      - Islamic law
+      - Halal
+      - Haram
+      - permissible
+      - forbidden
+      - Zakat
+      - charity
+      - alms
+      - Sawm
+      - fasting
+      - Ramadan
+      - Hajj
+      - pilgrimage
+      - Mecca
+      - Medina
+      - Kaaba
+      - Salah
+      - prayer
+      - Namaz
+      - Wudu
+      - ablution
+      - Shahada
+      - declaration of faith
+      - Five Pillars
+      - Jihad
+      - struggle
+      - Caliph
+      - Caliphate
+      - Imam
+      - Sheikh
+      - Ulama
+      - scholar
+      - Fatwa
+      - religious ruling
+      - Mosque
+      - Masjid
+      - Madrasa
+      - Eid
+      - Eid al-Fitr
+      - Eid al-Adha
+      - Sunni
+      - Shia
+      - Shiite
+      - Sufi
+      - Sufism
+      - Wahhabi
+      - Salafi
+      - Hanafi
+      - Maliki
+      - Shafi'i
+      - Hanbali
+      - Ja'fari
+      - Zaydi
+      - Ibadi
+      - Ismaili
+      - Ahmadiyya
+      - Nation of Islam
+      - Ummah
+      - community
+      - Dawah
+      - proselytization
+      - Jizya
+      - Dhimmi
+      - Ahl al-Kitab
+      - People of the Book
+      - Tawhid
+      - oneness of God
+      - Akhirah
+      - afterlife
+      - Jannah
+      - paradise
+      - Jahannam
+      - hell
+      - Qadar
+      - predestination
+      - free will
+      - Ibadah
+      - worship
+      - Adab
+      - etiquette
+      - Akhlaq
+      - morality
+    thresholds:
+      drift_warning: 0.58
+      rupture_alert: 0.78
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.40
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+      fallback_message: "I'm an AI, not an Islamic scholar or Imam. For religious guidance, consult a qualified religious authority."
+    compliance:
+      audit_log: true
+      retention_days: 30
+      disclaimer_required: true
+      sensitive_content: true
+    notes: |
+      Islamic jurisprudence (Fiqh) has multiple schools of thought.
+      Monitor for drift between Sunni/Shia perspectives or between
+      different legal schools. Be precise with Arabic transliteration.
+
+  # ============================================================================
+  # RELIGION - JUDAISM
+  # ============================================================================
+  judaism:
+    name: "Judaism"
+    description: "Jewish theology, practice, denominations"
+    high_stakes_keywords:
+      - Judaism
+      - Jewish
+      - Jew
+      - Hebrew
+      - Israel
+      - Zion
+      - Zionism
+      - God
+      - Yahweh
+      - YHWH
+      - Hashem
+      - Adonai
+      - Elohim
+      - Torah
+      - Pentateuch
+      - Tanakh
+      - Hebrew Bible
+      - Old Testament
+      - Talmud
+      - Talmudic
+      - Mishnah
+      - Gemara
+      - Midrash
+      - Halakha
+      - Halacha
+      - Jewish law
+      - Kashrut
+      - Kosher
+      - Treif
+      - Shabbat
+      - Sabbath
+      - Shabbos
+      - Yom Kippur
+      - Rosh Hashanah
+      - Passover
+      - Pesach
+      - Sukkot
+      - Shavuot
+      - Purim
+      - Hanukkah
+      - Chanukah
+      - Seder
+      - Haggadah
+      - Bar Mitzvah
+      - Bat Mitzvah
+      - Brit Milah
+      - circumcision
+      - Synagogue
+      - Shul
+      - Temple
+      - Rabbi
+      - Rebbe
+      - Cantor
+      - Chazzan
+      - Kohen
+      - priest
+      - Levi
+      - Levite
+      - Orthodox
+      - Haredi
+      - Ultra-Orthodox
+      - Hasidic
+      - Chabad
+      - Lubavitch
+      - Satmar
+      - Modern Orthodox
+      - Conservative
+      - Masorti
+      - Reform
+      - Progressive
+      - Reconstructionist
+      - Renewal
+      - Kabbalah
+      - Jewish mysticism
+      - Zohar
+      - Mitzvah
+      - commandment
+      - 613 mitzvot
+      - Tikkun Olam
+      - repair the world
+      - Teshuvah
+      - repentance
+      - Tzedakah
+      - charity
+      - righteousness
+      - Gemilut Chasadim
+      - loving kindness
+      - Brit
+      - covenant
+      - Aliyah
+      - immigration to Israel
+      - Diaspora
+      - Galut
+      - exile
+      - antisemitism
+      - Holocaust
+      - Shoah
+      - Yad Vashem
+    thresholds:
+      drift_warning: 0.58
+      rupture_alert: 0.78
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.40
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+      fallback_message: "I'm an AI, not a Rabbi or Jewish scholar. For religious guidance, consult a qualified religious authority."
+    compliance:
+      audit_log: true
+      retention_days: 30
+      disclaimer_required: true
+      sensitive_content: true
+    notes: |
+      Jewish law (Halakha) varies significantly by denomination.
+      Monitor for drift between Orthodox, Conservative, Reform
+      perspectives. Be sensitive to Jewish identity and history.
+
+  # ============================================================================
+  # JOB SEARCH
+  # ============================================================================
+  job_search:
+    name: "Job Search & Career"
+    description: "Employment, job search, career development, hiring"
+    high_stakes_keywords:
+      - job
+      - jobs
+      - employment
+      - unemployed
+      - unemployment
+      - hire
+      - hiring
+      - recruiter
+      - recruitment
+      - headhunter
+      - application
+      - apply
+      - resume
+      - CV
+      - curriculum vitae
+      - cover letter
+      - interview
+      - phone screen
+      - technical interview
+      - behavioral interview
+      - panel interview
+      - offer
+      - job offer
+      - offer letter
+      - salary
+      - compensation
+      - bonus
+      - equity
+      - stock options
+      - RSU
+      - restricted stock units
+      - benefits
+      - health insurance
+      - 401k match
+      - PTO
+      - paid time off
+      - remote
+      - hybrid
+      - onsite
+      - relocation
+      - relocation package
+      - signing bonus
+      - counteroffer
+      - negotiation
+      - career
+      - career change
+      - promotion
+      - raise
+      - merit increase
+      - performance review
+      - 360 review
+      - exit interview
+      - layoff
+      - fired
+      - terminated
+      - severance
+      - unemployment benefits
+      - LinkedIn
+      - Indeed
+      - Glassdoor
+      - Monster
+      - ZipRecruiter
+      - AngelList
+      - Wellfound
+      - Hired
+      - TripleByte
+      - referral
+      - professional network
+      - networking event
+      - informational interview
+      - career coach
+      - career counselor
+      - staffing agency
+      - temp agency
+      - contract work
+      - freelance
+      - gig economy
+      - side hustle
+      - portfolio
+      - personal brand
+      - elevator pitch
+      - ATS
+      - applicant tracking system
+      - background check
+      - drug test
+      - reference check
+      - employment verification
+    thresholds:
+      drift_warning: 0.60
+      rupture_alert: 0.80
+      drift_velocity: 0.10
+      variance_collapse: 0.02
+      recoverability: 0.35
+    interventions:
+      mode: adaptive
+      auto_regenerate: true
+      require_confirmation: false
+      user_visible_warnings: true
+      max_regenerations: 2
+      fallback_message: "Job market conditions vary by location and industry. Research specific to your target role and region."
+    compliance:
+      audit_log: true
+      retention_days: 90
+      disclaimer_required: true
+    notes: |
+      Job advice highly contextual (industry, location, seniority).
+      Monitor for outdated advice (e.g., resume trends change).
+      Flag when crossing into legal territory (discrimination,
+      contract review). Encourage professional career coaching
+      for major transitions.
+
+# ============================================================================
+# DOMAIN SELECTION RULES
+# ============================================================================
+selection_rules:
+  # How to handle multiple matching domains
+  conflict_resolution: priority  # priority | combine | ask_user
+  
+  # Priority order (lower number = higher priority)
+  priority_order:
+    - finance        # Strictest monitoring
+    - real_estate    # Legal implications
+    - marriage       # Emotional sensitivity
+    - christianity   # Religious guidance
+    - islam          # Religious guidance
+    - judaism        # Religious guidance
+    - politics       # Fact-checking critical
+    - economy        # Policy implications
+    - ai             # Technical precision
+    - job_search     # Career impact
+    - general        # Default fallback
+  
+  # When to suggest domain vs auto-switch
+  auto_switch_threshold: 0.8  # Confidence required for auto-switch
+  always_ask_for:           # Never auto-switch, always ask
+    - finance
+    - marriage
+
+# ============================================================================
+# CROSS-DOMAIN DETECTION
+# ============================================================================
+cross_domain_patterns:
+  # Detect when conversation spans multiple domains
+  - name: "political_economy"
+    domains: [politics, economy]
+    keywords: ["fiscal policy", "monetary policy", "trade war", "sanctions"]
+    
+  - name: "islamic_finance"
+    domains: [islam, finance]
+    keywords: ["Islamic banking", "Sharia-compliant", "sukuk", "riba"]
+    
+  - name: "tech_hiring"
+    domains: [ai, job_search]
+    keywords: ["AI engineer", "machine learning job", "tech interview"]
+    
+  - name: "religious_marriage"
+    domains: [marriage, christianity, islam, judaism]
+    keywords: ["interfaith marriage", "religious wedding", "marriage counseling"]
+
+# ============================================================================
+# EXTENDING DOMAINS
+# ============================================================================
+# To add a new domain:
+# 1. Copy an existing domain block
+# 2. Change the key (lowercase, no spaces)
+# 3. Update name, description, keywords
+# 4. Adjust thresholds as needed
+# 5. Add to priority_order if needed
+# 6. Restart Brain Guard plugin
+# 
+# No code changes required!
