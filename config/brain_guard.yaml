@@ -1,0 +1,65 @@
+# Brain Guard Configuration
+
+enabled: true
+
+# Latency budget for real-time processing
+latency:
+  max_ms: 100
+  target_ms: 50
+
+# SCFL-Quad thresholds
+thresholds:
+  drift_warning: 0.65
+  rupture_alert: 0.85
+  drift_velocity: 0.10
+  variance_collapse: 0.02
+  recoverability: 0.30
+  ambiguity: 0.70
+
+# Plugin mode: adaptive, passive, or strict
+mode: adaptive
+
+# Intervention settings
+interventions:
+  auto_regenerate: false
+  max_regenerations: 2
+  user_confirmation_for_halt: true
+  fallback_message: "I'm having trouble maintaining coherence. Let me try a more careful approach."
+
+# Session anchoring
+anchoring:
+  enabled: true
+  max_anchors: 50
+  contradiction_check: true
+  contradiction_threshold: 0.85
+  anchor_types:
+    - factual
+    - procedural
+    - contextual
+    - temporal
+
+# Embedding configuration
+embedding:
+  provider: openai
+  model: text-embedding-3-small
+  dimensions: 1536
+  cache_enabled: true
+  cache_ttl_seconds: 3600
+
+# Storage configuration
+storage:
+  type: sqlite
+  connection_string: /home/ubuntu/brain-guard/data/brain_guard.db
+
+# Dashboard (disabled for OpenClaw integration)
+dashboard:
+  enabled: false
+  host: 127.0.0.1
+  port: 4567
+  auth_required: true
+  cors_origins:
+    - http://localhost:4567
+
+# Testing settings
+testing:
+  mock_embeddings: true

@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 
 from ..utils.embedding_service import EmbeddingService
 from .session_anchoring import SessionAnchoring
+from ..metrics import get_metrics_exporter
 
 logger = logging.getLogger(__name__)
 
@@ -169,6 +170,21 @@ class Preprocessor:
             },
             processing_time_ms=total_processing_time_ms
         )
+        
+        # Emit Prometheus metrics
+        try:
+            exporter = get_metrics_exporter()
+            exporter.emit_ambiguity_score(
+                session_id=session_id,
+                ambiguity_score=ambiguity_score
+            )
+            exporter.emit_domain_detection(
+                session_id=session_id,
+                domain=domain
+            )
+            exporter.emit_processing_time(processing_time_ms=total_processing_time_ms)
+        except Exception as e:
+            logger.warning(f"Failed to emit preprocessor metrics: {e}")
         
         return {
             "conditioned_input": result.conditioned_input,

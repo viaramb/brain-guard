@@ -8,6 +8,7 @@ from collections import defaultdict
 
 from ..utils.embedding_service import EmbeddingService
 from ..models import Anchor, Contradiction
+from ..metrics import get_metrics_exporter
 
 logger = logging.getLogger(__name__)
 
@@ -159,6 +160,20 @@ class SessionAnchoring:
         # Enforce max anchors limit
         self._enforce_anchor_limit(session_id)
 
+        # Emit Prometheus metrics
+        try:
+            exporter = get_metrics_exporter()
+            for anchor in anchors:
+                exporter.emit_anchor_extracted(
+                    session_id=session_id,
+                    anchor_type=anchor.anchor_type
+                )
+            # Update active anchor count
+            active_count = len([a for a in self._anchors[session_id] if a.is_active])
+            exporter.emit_anchor_change(session_id=session_id, active_count=active_count)
+        except Exception as e:
+            logger.warning(f"Failed to emit anchoring metrics: {e}")
+
         return anchors
 
     def _extract_by_pattern(
@@ -277,6 +292,17 @@ class SessionAnchoring:
                         similarity=similarity,
                         confidence=confidence
                     ))
+
+        # Emit Prometheus metrics for contradictions
+        if contradictions:
+            try:
+                exporter = get_metrics_exporter()
+                exporter.emit_contradiction_detected(
+                    session_id=session_id,
+                    count=len(contradictions)
+                )
+            except Exception as e:
+                logger.warning(f"Failed to emit contradiction metrics: {e}")
 
         return contradictions
 
@@ -399,9 +425,9 @@ class SessionAnchoring:
             del self._anchors[session_id]
         if session_id in self._anchor_counter:
             del self._anchor_counter[session_id]
-    def clear_session(self, session_id: str) -> None:
-        """Clear all anchors for a session."""
-        if session_id in self._anchors:
-            del self._anchors[session_id]
-        if session_id in self._anchor_counter:
-            del self._anchor_counter[session_id]
+        # Clear metrics for this session
+        try:
+            exporter = get_metrics_exporter()
+            exporter.clear_session(session_id)
+        except Exception as e:
+            logger.warning(f"Failed to clear session metrics: {e}")

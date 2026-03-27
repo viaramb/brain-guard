@@ -7,7 +7,7 @@ from typing import Any, Optional, Dict, List
 from contextlib import asynccontextmanager
 
 from .utils.config import Config, ConfigLoader
-from .utils.embedding_service import EmbeddingService, MockEmbeddingService
+from .utils.embedding_service import EmbeddingService, MockEmbeddingService, create_embedding_service
 from .utils.validation import (
     validate_session_id,
     validate_message,
@@ -88,7 +88,7 @@ class BrainGuardPlugin:
                 dimensions=self.config.embedding.dimensions
             )
         else:
-            self._embedding_service = EmbeddingService(
+            self._embedding_service = create_embedding_service(
                 provider=self.config.embedding.provider,
                 model=self.config.embedding.model,
                 dimensions=self.config.embedding.dimensions,

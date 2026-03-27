@@ -1,0 +1,655 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Brain Guard SCFL-Quad Monitoring",
+    "tags": ["brain-guard", "scfl-quad", "coherence"],
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "session_id",
+          "type": "query",
+          "query": "label_values(brain_guard_coherence_delta_g, session_id)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*"
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Interventions",
+          "datasource": "Prometheus",
+          "expr": "increase(brain_guard_response_interventions_triggered_total[1m]) > 0",
+          "tagKeys": "intervention_type,priority",
+          "textFormat": "{{intervention_type}} ({{priority}})"
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Overview",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Sessions",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "count(count by (session_id) (brain_guard_coherence_delta_g))",
+            "legendFormat": "Sessions"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1}
+      },
+      {
+        "id": 3,
+        "title": "Total Interventions (1h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(brain_guard_response_interventions_triggered_total[1h]))",
+            "legendFormat": "Interventions"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1}
+      },
+      {
+        "id": 4,
+        "title": "Total Anchors Extracted",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(brain_guard_anchoring_anchors_extracted_total)",
+            "legendFormat": "Anchors"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1}
+      },
+      {
+        "id": 5,
+        "title": "Domain Switches",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(brain_guard_observatory_domain_switches_total)",
+            "legendFormat": "Switches"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 20}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1}
+      },
+      {
+        "id": 10,
+        "title": "Layer 3: Coherence Field Monitor (CFM)",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5}
+      },
+      {
+        "id": 11,
+        "title": "Delta G (Coherence Deformation)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_coherence_delta_g{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.5},
+                {"color": "red", "value": 0.7}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6}
+      },
+      {
+        "id": 12,
+        "title": "Drift Velocity",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_coherence_drift_velocity{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "none",
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 0.2}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6}
+      },
+      {
+        "id": 13,
+        "title": "Variance",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_coherence_variance{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "none",
+            "min": 0,
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 0.02},
+                {"color": "green", "value": 0.1}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14}
+      },
+      {
+        "id": 14,
+        "title": "Continuity Score",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_coherence_continuity_score{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 0.5},
+                {"color": "green", "value": 0.8}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14}
+      },
+      {
+        "id": 20,
+        "title": "Layer 2: Session Anchoring System (SAS)",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 22}
+      },
+      {
+        "id": 21,
+        "title": "Active Anchors by Session",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_anchoring_active_anchors{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "none",
+            "min": 0,
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 23}
+      },
+      {
+        "id": 22,
+        "title": "Anchors Extracted by Type",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (anchor_type) (rate(brain_guard_anchoring_anchors_extracted_total[5m]))",
+            "legendFormat": "{{anchor_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "stacking": {"mode": "normal"},
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 23}
+      },
+      {
+        "id": 23,
+        "title": "Contradictions Detected",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (session_id) (rate(brain_guard_anchoring_contradictions_detected_total[5m]))",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 0.5}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 31}
+      },
+      {
+        "id": 30,
+        "title": "Layer 1: Context Domain Observatory (CDO)",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 39}
+      },
+      {
+        "id": 31,
+        "title": "Domain Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "count by (domain) (brain_guard_observatory_risk_score)",
+            "legendFormat": "{{domain}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"}
+          }
+        },
+        "options": {
+          "pieType": "donut",
+          "legend": {"displayMode": "list", "placement": "right"}
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 40}
+      },
+      {
+        "id": 32,
+        "title": "Ambiguity Score",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "brain_guard_observatory_ambiguity_score{session_id=~\"$session_id\"}",
+            "legendFormat": "{{session_id}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "min": 0,
+            "max": 1,
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.5},
+                {"color": "red", "value": 0.7}
+              ]
+            },
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 40}
+      },
+      {
+        "id": 33,
+        "title": "Domain Switches Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (from_domain, to_domain) (rate(brain_guard_observatory_domain_switches_total[5m]))",
+            "legendFormat": "{{from_domain}} → {{to_domain}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 10,
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 40}
+      },
+      {
+        "id": 40,
+        "title": "Layer 4: Response Control & Evaluation (RCE)",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 48}
+      },
+      {
+        "id": 41,
+        "title": "Interventions by Type",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (intervention_type) (rate(brain_guard_response_interventions_triggered_total[5m]))",
+            "legendFormat": "{{intervention_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "stacking": {"mode": "normal"},
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 49}
+      },
+      {
+        "id": 42,
+        "title": "Interventions by Priority",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (priority) (rate(brain_guard_response_interventions_triggered_total[5m]))",
+            "legendFormat": "{{priority}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "lineWidth": 2,
+              "fillOpacity": 20,
+              "stacking": {"mode": "normal"},
+              "gradientMode": "opacity"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 49}
+      },
+      {
+        "id": 43,
+        "title": "Processing Time Distribution",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "rate(brain_guard_response_processing_seconds_bucket[5m])",
+            "legendFormat": "{{le}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "options": {
+          "calculate": false,
+          "yAxis": {"unit": "s", "logBase": 1}
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 57}
+      },
+      {
+        "id": 44,
+        "title": "Response Latency",
+        "type": "heatmap",
+        "targets": [
+          {
+            "expr": "rate(brain_guard_response_latency_seconds_bucket[5m])",
+            "legendFormat": "{{le}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "options": {
+          "calculate": false,
+          "yAxis": {"unit": "s", "logBase": 1}
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 57}
+      },
+      {
+        "id": 50,
+        "title": "Alerts",
+        "type": "row",
+        "collapsed": false,
+        "gridPos": {"h": 1, "w": 24, "x": 0, "y": 65}
+      },
+      {
+        "id": 51,
+        "title": "Active Alerts",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "ALERTS{alertstate=\"firing\"}",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {"displayMode": "auto"}
+          },
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "severity"},
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {"options": {"critical": {"color": "red", "text": "Critical"}}, "type": "value"},
+                    {"options": {"warning": {"color": "yellow", "text": "Warning"}}, "type": "value"}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 66}
+      }
+    ],
+    "alerting": {
+      "alertmanager": [
+        {
+          "name": "Brain Guard Alerts",
+          "rules": [
+            {
+              "alert": "HighCoherenceDrift",
+              "expr": "brain_guard_coherence_delta_g > 0.7",
+              "for": "1m",
+              "labels": {"severity": "critical"},
+              "annotations": {
+                "summary": "High coherence drift detected",
+                "description": "Session {{ $labels.session_id }} has delta_g of {{ $value }}"
+              }
+            },
+            {
+              "alert": "AcceleratingDrift",
+              "expr": "brain_guard_coherence_drift_velocity > 0.2",
+              "for": "30s",
+              "labels": {"severity": "warning"},
+              "annotations": {
+                "summary": "Accelerating drift detected",
+                "description": "Session {{ $labels.session_id }} drift velocity is {{ $value }}"
+              }
+            },
+            {
+              "alert": "VarianceCollapse",
+              "expr": "brain_guard_coherence_variance < 0.02",
+              "for": "2m",
+              "labels": {"severity": "warning"},
+              "annotations": {
+                "summary": "Variance collapse detected",
+                "description": "Session {{ $labels.session_id }} variance is {{ $value }}"
+              }
+            },
+            {
+              "alert": "LowContinuityScore",
+              "expr": "brain_guard_coherence_continuity_score < 0.5",
+              "for": "1m",
+              "labels": {"severity": "critical"},
+              "annotations": {
+                "summary": "Low continuity score",
+                "description": "Session {{ $labels.session_id }} continuity score is {{ $value }}"
+              }
+            },
+            {
+              "alert": "HighContradictionRate",
+              "expr": "rate(brain_guard_anchoring_contradictions_detected_total[5m]) > 0.5",
+              "for": "1m",
+              "labels": {"severity": "warning"},
+              "annotations": {
+                "summary": "High contradiction rate",
+                "description": "Session {{ $labels.session_id }} has high contradiction rate"
+              }
+            },
+            {
+              "alert": "HighAmbiguity",
+              "expr": "brain_guard_observatory_ambiguity_score > 0.7",
+              "for": "2m",
+              "labels": {"severity": "warning"},
+              "annotations": {
+                "summary": "High input ambiguity",
+                "description": "Session {{ $labels.session_id }} ambiguity score is {{ $value }}"
+              }
+            },
+            {
+              "alert": "HighInterventionRate",
+              "expr": "rate(brain_guard_response_interventions_triggered_total[5m]) > 1",
+              "for": "1m",
+              "labels": {"severity": "critical"},
+              "annotations": {
+                "summary": "High intervention rate",
+                "description": "Session {{ $labels.session_id }} has high intervention rate"
+              }
+            },
+            {
+              "alert": "SlowProcessing",
+              "expr": "histogram_quantile(0.95, rate(brain_guard_response_processing_seconds_bucket[5m])) > 0.5",
+              "for": "2m",
+              "labels": {"severity": "warning"},
+              "annotations": {
+                "summary": "Slow processing detected",
+                "description": "95th percentile processing time is {{ $value }}s"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

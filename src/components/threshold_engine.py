@@ -6,6 +6,7 @@ from typing import Dict, List, Any, Optional
 from ..utils.config import ThresholdConfig, InterventionsConfig
 from ..models import Contradiction, Intervention, InterventionType, InterventionPriority
 from .coherence_monitor import CoherenceMetrics
+from ..metrics import get_metrics_exporter
 
 logger = logging.getLogger(__name__)
 
@@ -159,6 +160,16 @@ class ThresholdEngine:
                 f"Intervention triggered: {intervention.type.value} "
                 f"({intervention.reason})"
             )
+            # Emit Prometheus metrics
+            try:
+                exporter = get_metrics_exporter()
+                exporter.emit_intervention(
+                    session_id=metrics.session_id,
+                    intervention_type=intervention.type.value,
+                    priority=intervention.priority.name
+                )
+            except Exception as e:
+                logger.warning(f"Failed to emit intervention metrics: {e}")
         
         return intervention
     

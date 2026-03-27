@@ -8,6 +8,7 @@ from collections import deque
 
 from ..utils.embedding_service import EmbeddingService, EmbeddingTimingMetrics
 from ..utils.validation import validate_session_id, validate_message, ValidationError
+from ..metrics import get_metrics_exporter
 
 logger = logging.getLogger(__name__)
 
@@ -135,6 +136,20 @@ class CoherenceMonitor:
         
         # Store metrics history
         self._session_metrics[session_id].append(metrics)
+        
+        # Emit Prometheus metrics
+        try:
+            exporter = get_metrics_exporter()
+            exporter.emit_coherence_metrics(
+                session_id=session_id,
+                delta_g=delta_g,
+                drift_velocity=drift_velocity,
+                variance=variance,
+                continuity_score=continuity_score,
+                processing_time_ms=processing_time_ms
+            )
+        except Exception as e:
+            logger.warning(f"Failed to emit coherence metrics: {e}")
         
         return metrics
     

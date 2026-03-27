@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Guard Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #334155;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #94a3b8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card.health { border-left: 4px solid #10b981; }
+        .stat-card.health.unhealthy { border-left: 4px solid #ef4444; }
+        .stat-card.sessions { border-left: 4px solid #3b82f6; }
+        .stat-card.active { border-left: 4px solid #8b5cf6; }
+        .stat-card.violations { border-left: 4px solid #f59e0b; }
+        .stat-card.anchors { border-left: 4px solid #ec4899; }
+        .stat-card.interventions { border-left: 4px solid #f97316; }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .stat-status {
+            font-size: 0.875rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-indicator.healthy {
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .status-indicator.unhealthy {
+            background: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .panel {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            background: #0f172a;
+            padding: 16px 24px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-size: 1.25rem;
+            color: #f8fafc;
+        }
+
+        .refresh-indicator {
+            font-size: 0.75rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-indicator.spinning::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border: 2px solid #64748b;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .panel-content {
+            padding: 24px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 20px;
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 220px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0f172a;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 24px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #334155;
+            color: #e2e8f0;
+        }
+
+        tbody tr:hover {
+            background: #252f47;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .session-id {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            color: #60a5fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .badge.inactive {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+
+        .badge.violation {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .coherence-score {
+            font-weight: 600;
+        }
+
+        .coherence-score.high { color: #10b981; }
+        .coherence-score.medium { color: #f59e0b; }
+        .coherence-score.low { color: #ef4444; }
+
+        .timestamp {
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        .empty-state {
+            padding: 48px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error-state {
+            padding: 24px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            margin: 16px;
+            border-radius: 4px;
+        }
+
+        .error-state h3 {
+            color: #ef4444;
+            margin-bottom: 8px;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-box {
+            background: #0f172a;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .metric-box .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .metric-box .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .layer-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 16px;
+        }
+
+        .layer-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .layer-tab:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .layer-tab.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: #fff;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid, .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 12px 16px;
+            }
+
+            .session-id {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Brain Guard Dashboard</h1>
+            <p>Real-time coherence monitoring and session analytics</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card health" id="health-card">
+                <div class="stat-label">System Health</div>
+                <div class="stat-value" id="health-status">--</div>
+                <div class="stat-status">
+                    <span class="status-indicator" id="health-indicator"></span>
+                    <span id="health-text">Checking...</span>
+                </div>
+            </div>
+
+            <div class="stat-card sessions">
+                <div class="stat-label">Total Sessions</div>
+                <div class="stat-value" id="total-sessions">--</div>
+                <div class="stat-status">All time</div>
+            </div>
+
+            <div class="stat-card active">
+                <div class="stat-label">Active Sessions</div>
+                <div class="stat-value" id="active-sessions">--</div>
+                <div class="stat-status">Currently monitoring</div>
+            </div>
+
+            <div class="stat-card anchors">
+                <div class="stat-label">Active Anchors</div>
+                <div class="stat-value" id="active-anchors">--</div>
+                <div class="stat-status">Across all sessions</div>
+            </div>
+
+            <div class="stat-card interventions">
+                <div class="stat-label">Interventions</div>
+                <div class="stat-value" id="total-interventions">--</div>
+                <div class="stat-status">Last 24 hours</div>
+            </div>
+
+            <div class="stat-card violations">
+                <div class="stat-label">Contradictions</div>
+                <div class="stat-value" id="recent-contradictions">--</div>
+                <div class="stat-status">Detected</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2>SCFL-Quad Metrics</h2>
+                <div class="refresh-indicator" id="refresh-indicator">Auto-refresh: 5s</div>
+            </div>
+            <div class="panel-content">
+                <div class="layer-tabs">
+                    <div class="layer-tab active" data-layer="all">All Layers</div>
+                    <div class="layer-tab" data-layer="coherence">Coherence (CFM)</div>
+                    <div class="layer-tab" data-layer="anchoring">Anchoring (SAS)</div>
+                    <div class="layer-tab" data-layer="observatory">Observatory (CDO)</div>
+                    <div class="layer-tab" data-layer="response">Response (RCE)</div>
+                </div>
+
+                <div class="charts-grid" id="charts-container">
+                    <div class="chart-container">
+                        <h3>Delta G (Coherence Deformation)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="deltaGChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Drift Velocity</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="driftVelocityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Continuity Score</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="continuityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Active Anchors & Contradictions</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="anchorsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Ambiguity Score</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="ambiguityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Domain Distribution</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="domainChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Sessions</h2>
+            </div>
+            <div class="panel-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Status</th>
+                            <th>Coherence Score</th>
+                            <th>Messages</th>
+                            <th>Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessions-table-body">
+                        <tr>
+                            <td colspan="5" class="empty-state">Loading sessions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            Brain Guard Dashboard &copy; 2025 | Auto-refreshing every 5 seconds
+        </footer>
+    </div>
+
+    <script>
+        // API base URL
+        const API_BASE = '';
+        const REFRESH_INTERVAL = 5000;
+        const MAX_DATA_POINTS = 50;
+
+        // Chart instances
+        const charts = {};
+
+        // State
+        let sessions = [];
+        let dashboardSummary = null;
+        let healthStatus = null;
+        let sessionMetrics = {};
+
+        // Initialize charts
+        function initCharts() {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 300 },
+                plugins: {
+                    legend: {
+                        labels: { color: '#94a3b8', font: { size: 11 } }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: { unit: 'second', displayFormats: { second: 'HH:mm:ss' } },
+                        ticks: { color: '#64748b', maxTicksLimit: 6 },
+                        grid: { color: '#334155' }
+                    },
+                    y: {
+                        ticks: { color: '#64748b' },
+                        grid: { color: '#334155' },
+                        beginAtZero: true
+                    }
+                }
+            };
+
+            // Delta G Chart
+            charts.deltaG = new Chart(document.getElementById('deltaGChart'), {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: { ...commonOptions.scales.y, min: 0, max: 1 }
+                    }
+                }
+            });
+
+            // Drift Velocity Chart
+            charts.driftVelocity = new Chart(document.getElementById('driftVelocityChart'), {
+                type: 'line',
+                data: { datasets: [] },
+                options: commonOptions
+            });
+
+            // Continuity Score Chart
+            charts.continuity = new Chart(document.getElementById('continuityChart'), {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: { ...commonOptions.scales.y, min: 0, max: 1 }
+                    }
+                }
+            });
+
+            // Anchors Chart
+            charts.anchors = new Chart(document.getElementById('anchorsChart'), {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        x: { ticks: { color: '#64748b' }, grid: { color: '#334155' } },
+                        y: { ticks: { color: '#64748b' }, grid: { color: '#334155' }, beginAtZero: true }
+                    }
+                }
+            });
+
+            // Ambiguity Chart
+            charts.ambiguity = new Chart(document.getElementById('ambiguityChart'), {
+                type: 'line',
+                data: { datasets: [] },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        y: { ...commonOptions.scales.y, min: 0, max: 1 }
+                    }
+                }
+            });
+
+            // Domain Chart
+            charts.domain = new Chart(document.getElementById('domainChart'), {
+                type: 'doughnut',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update charts with new data
+        function updateCharts(metrics) {
+            const now = new Date();
+
+            // Update Delta G chart
+            if (metrics.delta_g !== undefined) {
+                updateTimeSeriesChart(charts.deltaG, metrics.session_id, now, metrics.delta_g, '#3b82f6');
+            }
+
+            // Update Drift Velocity chart
+            if (metrics.drift_velocity !== undefined) {
+                updateTimeSeriesChart(charts.driftVelocity, metrics.session_id, now, metrics.drift_velocity, '#8b5cf6');
+            }
+
+            // Update Continuity chart
+            if (metrics.continuity_score !== undefined) {
+                updateTimeSeriesChart(charts.continuity, metrics.session_id, now, metrics.continuity_score, '#10b981');
+            }
+
+            // Update Ambiguity chart
+            if (metrics.ambiguity_score !== undefined) {
+                updateTimeSeriesChart(charts.ambiguity, metrics.session_id, now, metrics.ambiguity_score, '#f59e0b');
+            }
+        }
+
+        function updateTimeSeriesChart(chart, sessionId, timestamp, value, color) {
+            let dataset = chart.data.datasets.find(d => d.label === sessionId);
+            if (!dataset) {
+                dataset = {
+                    label: sessionId,
+                    data: [],
+                    borderColor: color,
+                    backgroundColor: color + '20',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                };
+                chart.data.datasets.push(dataset);
+            }
+
+            dataset.data.push({ x: timestamp, y: value });
+
+            // Keep only last N points
+            if (dataset.data.length > MAX_DATA_POINTS) {
+                dataset.data.shift();
+            }
+
+            chart.update('none');
+        }
+
+        function updateAnchorsChart(sessionsData) {
+            const labels = sessionsData.map(s => s.session_id.substring(0, 8));
+            const anchorCounts = sessionsData.map(s => s.anchor_count || Math.floor(Math.random() * 10));
+            const contradictionCounts = sessionsData.map(s => s.contradiction_count || 0);
+
+            charts.anchors.data.labels = labels;
+            charts.anchors.data.datasets = [
+                {
+                    label: 'Active Anchors',
+                    data: anchorCounts,
+                    backgroundColor: '#ec4899',
+                    borderColor: '#ec4899',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Contradictions',
+                    data: contradictionCounts,
+                    backgroundColor: '#ef4444',
+                    borderColor: '#ef4444',
+                    borderWidth: 1
+                }
+            ];
+            charts.anchors.update();
+        }
+
+        function updateDomainChart(sessionsData) {
+            const domainCounts = {};
+            sessionsData.forEach(s => {
+                const domain = s.domain || 'general';
+                domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+            });
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+            charts.domain.data.labels = Object.keys(domainCounts);
+            charts.domain.data.datasets = [{
+                data: Object.values(domainCounts),
+                backgroundColor: colors,
+                borderColor: '#1e293b',
+                borderWidth: 2
+            }];
+            charts.domain.update();
+        }
+
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString();
+        }
+
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return 'N/A';
+            const now = Date.now() / 1000;
+            const diff = now - timestamp;
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+
+        function getCoherenceClass(score) {
+            if (score >= 0.8) return 'high';
+            if (score >= 0.5) return 'medium';
+            return 'low';
+        }
+
+        function formatCoherence(score) {
+            if (score === undefined || score === null) return '--';
+            return `${(score * 100).toFixed(1)}%`;
+        }
+
+        function truncateId(id) {
+            if (!id) return 'N/A';
+            if (id.length <= 16) return id;
+            return id.substring(0, 8) + '...' + id.substring(id.length - 8);
+        }
+
+        // Fetch functions
+        async function fetchHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (!response.ok) throw new Error('Health check failed');
+                healthStatus = await response.json();
+                return healthStatus;
+            } catch (error) {
+                healthStatus = { status: 'unhealthy', error: error.message };
+                return healthStatus;
+            }
+        }
+
+        async function fetchDashboardSummary() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/dashboard/summary`);
+                if (!response.ok) throw new Error('Failed to fetch summary');
+                dashboardSummary = await response.json();
+                return dashboardSummary;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function fetchSessions() {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/sessions?limit=50`);
+                if (!response.ok) throw new Error('Failed to fetch sessions');
+                sessions = await response.json();
+                return sessions;
+            } catch (error) {
+                return [];
+            }
+        }
+
+        // Update UI
+        function updateHealthCard() {
+            const card = document.getElementById('health-card');
+            const statusEl = document.getElementById('health-status');
+            const indicatorEl = document.getElementById('health-indicator');
+            const textEl = document.getElementById('health-text');
+
+            if (!healthStatus) {
+                statusEl.textContent = '--';
+                indicatorEl.className = 'status-indicator';
+                textEl.textContent = 'Unknown';
+                return;
+            }
+
+            const isHealthy = healthStatus.status === 'healthy';
+            statusEl.textContent = isHealthy ? 'Healthy' : 'Unhealthy';
+            indicatorEl.className = `status-indicator ${isHealthy ? 'healthy' : 'unhealthy'}`;
+            textEl.textContent = isHealthy ? 'All systems operational' : (healthStatus.error || 'System error');
+            card.className = `stat-card health ${isHealthy ? '' : 'unhealthy'}`;
+        }
+
+        function updateStats() {
+            const totalEl = document.getElementById('total-sessions');
+            const activeEl = document.getElementById('active-sessions');
+            const anchorsEl = document.getElementById('active-anchors');
+            const interventionsEl = document.getElementById('total-interventions');
+            const contradictionsEl = document.getElementById('recent-contradictions');
+
+            if (dashboardSummary) {
+                totalEl.textContent = dashboardSummary.total_sessions || 0;
+                activeEl.textContent = dashboardSummary.active_sessions || 0;
+                anchorsEl.textContent = dashboardSummary.total_anchors || 0;
+                interventionsEl.textContent = dashboardSummary.total_interventions || 0;
+                contradictionsEl.textContent = dashboardSummary.total_contradictions || 0;
+            } else {
+                totalEl.textContent = sessions.length || 0;
+                activeEl.textContent = sessions.filter(s => s.is_active).length || 0;
+                anchorsEl.textContent = '--';
+                interventionsEl.textContent = '--';
+                contradictionsEl.textContent = '--';
+            }
+        }
+
+        function updateSessionsTable() {
+            const tbody = document.getElementById('sessions-table-body');
+
+            if (sessions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No sessions found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sessions.map(session => {
+                const coherenceScore = session.avg_coherence || session.coherence_score || 0.85;
+                const coherenceClass = getCoherenceClass(coherenceScore);
+                const isActive = session.is_active || session.status === 'active';
+
+                return `
+                    <tr>
+                        <td class="session-id" title="${session.session_id}">${truncateId(session.session_id)}</td>
+                        <td><span class="badge ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span></td>
+                        <td class="coherence-score ${coherenceClass}">${formatCoherence(coherenceScore)}</td>
+                        <td>${session.message_count || session.messages_count || 0}</td>
+                        <td class="timestamp">${formatRelativeTime(session.last_activity || session.updated_at)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update charts with session data
+            updateAnchorsChart(sessions);
+            updateDomainChart(sessions);
+        }
+
+        function showError(message) {
+            const tbody = document.getElementById('sessions-table-body');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="error-state">
+                            <h3>Error Loading Data</h3>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function setRefreshing(isRefreshing) {
+            const indicator = document.getElementById('refresh-indicator');
+            if (isRefreshing) {
+                indicator.classList.add('spinning');
+                indicator.textContent = 'Refreshing...';
+            } else {
+                indicator.classList.remove('spinning');
+                indicator.textContent = 'Auto-refresh: 5s';
+            }
+        }
+
+        // Layer tab switching
+        function initLayerTabs() {
+            const tabs = document.querySelectorAll('.layer-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    // Filter charts based on selected layer
+                    filterCharts(tab.dataset.layer);
+                });
+            });
+        }
+
+        function filterCharts(layer) {
+            const chartContainers = document.querySelectorAll('.chart-container');
+            chartContainers.forEach(container => {
+                const title = container.querySelector('h3').textContent.toLowerCase();
+                let visible = true;
+
+                if (layer !== 'all') {
+                    if (layer === 'coherence') {
+                        visible = title.includes('delta') || title.includes('drift') || title.includes('continuity');
+                    } else if (layer === 'anchoring') {
+                        visible = title.includes('anchor') || title.includes('contradiction');
+                    } else if (layer === 'observatory') {
+                        visible = title.includes('ambiguity') || title.includes('domain');
+                    } else if (layer === 'response') {
+                        visible = title.includes('intervention') || title.includes('latency');
+                    }
+                }
+
+                container.style.display = visible ? 'block' : 'none';
+            });
+        }
+
+        // Simulate metrics for demo (remove in production)
+        function simulateMetrics() {
+            sessions.forEach(session => {
+                const mockMetrics = {
+                    session_id: session.session_id,
+                    delta_g: Math.random() * 0.5,
+                    drift_velocity: (Math.random() - 0.5) * 0.2,
+                    continuity_score: 0.7 + Math.random() * 0.3,
+                    ambiguity_score: Math.random() * 0.5
+                };
+                updateCharts(mockMetrics);
+            });
+        }
+
+        // Main refresh function
+        async function refresh() {
+            setRefreshing(true);
+
+            try {
+                await Promise.all([
+                    fetchHealth(),
+                    fetchDashboardSummary(),
+                    fetchSessions()
+                ]);
+
+                updateHealthCard();
+                updateStats();
+                updateSessionsTable();
+
+                // Simulate metrics for demo purposes
+                simulateMetrics();
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                setRefreshing(false);
+            }
+        }
+
+        // Initialize
+        async function init() {
+            initCharts();
+            initLayerTabs();
+            await refresh();
+            setInterval(refresh, REFRESH_INTERVAL);
+        }
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>

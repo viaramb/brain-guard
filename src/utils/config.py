@@ -212,6 +212,13 @@ class ConfigLoader:
                 config["storage"] = {}
             config["storage"]["connection_string"] = env_db
         
+        # BRAIN_GUARD_DASHBOARD_ENABLED
+        env_dashboard = os.environ.get("BRAIN_GUARD_DASHBOARD_ENABLED")
+        if env_dashboard is not None:
+            if "dashboard" not in config:
+                config["dashboard"] = {}
+            config["dashboard"]["enabled"] = env_dashboard.lower() in ("true", "1", "yes", "on")
+        
         # BRAIN_GUARD_DASHBOARD_PORT
         env_port = os.environ.get("BRAIN_GUARD_DASHBOARD_PORT")
         if env_port:

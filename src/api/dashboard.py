@@ -7,15 +7,18 @@ from typing import Dict, List, Any, Optional
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Depends, Request
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import asyncio
+import os
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from ..database.db_manager import DatabaseManager, validate_limit, validate_session_id, validate_timestamp, ValidationError
+from ..metrics import get_metrics_exporter
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +205,19 @@ class DashboardServer:
             token = request.query_params.get("token")
             return token == self.auth_token
         
+        # Static files directory
+        static_dir = os.path.join(os.path.dirname(__file__), "dashboard_static")
+        if os.path.exists(static_dir):
+            app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+        @app.get("/")
+        async def root():
+            """Serve the dashboard HTML."""
+            index_path = os.path.join(static_dir, "index.html")
+            if os.path.exists(index_path):
+                return FileResponse(index_path)
+            raise HTTPException(status_code=404, detail="Dashboard not found")
+
         @app.get("/health")
         @limiter.limit("60/minute")
         async def health_check(request: Request) -> Dict[str, Any]:
@@ -438,6 +454,16 @@ class DashboardServer:
             
             # Placeholder for active alerts
             return []
+        
+        @app.get("/metrics")
+        @limiter.limit("60/minute")
+        async def get_prometheus_metrics(request: Request) -> Response:
+            """Prometheus metrics endpoint."""
+            exporter = get_metrics_exporter()
+            return Response(
+                content=exporter.get_metrics(),
+                media_type=exporter.get_content_type()
+            )
         
         return app
     
